@@ -7,7 +7,8 @@ namespace SlothEnterprise.ProductApplication.Products
     {
         public int Id { get; set; }
 
-        public int VisitProduct(IProductApplicationVisitor visitor, ISellerApplication application)
+        public ISubmitApplicationResult VisitProduct(
+            IProductApplicationVisitor visitor, ISellerApplication application)
         {
             return visitor.SubmitApplication(application, this);
         }
