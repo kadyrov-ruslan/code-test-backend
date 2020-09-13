@@ -33,6 +33,8 @@ namespace SlothEnterprise.ProductApplication.Services
             ISellerApplication application,
             SelectiveInvoiceDiscount selectiveInvoiceDiscount)
         {
+            // TODO args validation. Maybe locate validation inside models
+            
             // TODO maybe _selectInvoiceService.SubmitApplicationFor signature
             // TODO must be similar to _confidentialInvoiceWebService.SubmitApplicationFor
             // TODO because all these methods return application result
@@ -49,6 +51,7 @@ namespace SlothEnterprise.ProductApplication.Services
             ISellerApplication application,
             ConfidentialInvoiceDiscount confidentialInvoiceDiscount)
         {
+            // TODO args validation. Maybe locate validation inside models
             var result = _confidentialInvoiceWebService.SubmitApplicationFor(
                 new CompanyDataRequest
                 {
@@ -69,6 +72,7 @@ namespace SlothEnterprise.ProductApplication.Services
             ISellerApplication application,
             BusinessLoans businessLoans)
         {
+            // TODO args validation. Maybe locate validation inside models
             var result = _businessLoansService.SubmitApplicationFor(new CompanyDataRequest
             {
                 CompanyFounded = application.CompanyData.Founded,
