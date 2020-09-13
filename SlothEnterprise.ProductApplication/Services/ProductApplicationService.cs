@@ -1,11 +1,9 @@
-﻿using System;
-using SlothEnterprise.External;
+﻿using SlothEnterprise.External;
 using SlothEnterprise.External.V1;
 using SlothEnterprise.ProductApplication.Applications;
 using SlothEnterprise.ProductApplication.Products;
-using SlothEnterprise.ProductApplication.Services;
 
-namespace SlothEnterprise.ProductApplication
+namespace SlothEnterprise.ProductApplication.Services
 {
     public class ProductApplicationService : IProductApplicationVisitor
     {
@@ -25,24 +23,29 @@ namespace SlothEnterprise.ProductApplication
         /// </summary>
         /// <param name="application"></param>
         /// <returns></returns>
-        public int SubmitApplicationFor(ISellerApplication application)
+        public ISubmitApplicationResult SubmitApplicationFor(ISellerApplication application)
         {
             return application.Product.VisitProduct(this, application);
         }
 
         ///<inheritdoc/>
-        public int SubmitApplication(
+        public ISubmitApplicationResult SubmitApplication(
             ISellerApplication application,
             SelectiveInvoiceDiscount selectiveInvoiceDiscount)
         {
-            return _selectInvoiceService.SubmitApplicationFor(
+            // TODO maybe _selectInvoiceService.SubmitApplicationFor signature
+            // TODO must be similar to _confidentialInvoiceWebService.SubmitApplicationFor
+            // TODO because all these methods return application result
+            var result = _selectInvoiceService.SubmitApplicationFor(
                 application.CompanyData.Number.ToString(),
                 selectiveInvoiceDiscount.InvoiceAmount,
                 selectiveInvoiceDiscount.AdvancePercentage);
+            
+            return new SubmitApplicationResult(result);
         }
 
         ///<inheritdoc/>
-        public int SubmitApplication(
+        public ISubmitApplicationResult SubmitApplication(
             ISellerApplication application,
             ConfidentialInvoiceDiscount confidentialInvoiceDiscount)
         {
@@ -58,11 +61,11 @@ namespace SlothEnterprise.ProductApplication
                 confidentialInvoiceDiscount.AdvancePercentage, 
                 confidentialInvoiceDiscount.VatRate);
 
-            return (result.Success) ? result.ApplicationId ?? -1 : -1;
+            return new SubmitApplicationResult(result);
         }
 
         ///<inheritdoc/>
-        public int SubmitApplication(
+        public ISubmitApplicationResult SubmitApplication(
             ISellerApplication application,
             BusinessLoans businessLoans)
         {
@@ -77,7 +80,8 @@ namespace SlothEnterprise.ProductApplication
                 InterestRatePerAnnum = businessLoans.InterestRatePerAnnum,
                 LoanAmount = businessLoans.LoanAmount
             });
-            return (result.Success) ? result.ApplicationId ?? -1 : -1;
+            
+            return new SubmitApplicationResult(result);
         }
     }
 }

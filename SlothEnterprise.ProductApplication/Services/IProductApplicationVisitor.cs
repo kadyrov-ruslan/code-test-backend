@@ -14,7 +14,8 @@ namespace SlothEnterprise.ProductApplication.Services
         /// <param name="application">Seller application</param>
         /// <param name="selectiveInvoiceDiscount">Selective invoice discount product</param>
         /// <returns></returns>
-        int SubmitApplication(ISellerApplication application, SelectiveInvoiceDiscount selectiveInvoiceDiscount);
+        ISubmitApplicationResult SubmitApplication(
+            ISellerApplication application, SelectiveInvoiceDiscount selectiveInvoiceDiscount);
         
         /// <summary>
         /// Submits application for ConfidentialInvoiceDiscount
@@ -22,7 +23,8 @@ namespace SlothEnterprise.ProductApplication.Services
         /// <param name="application">Seller application</param>
         /// <param name="confidentialInvoiceDiscount">Confidential invoice discount product</param>
         /// <returns></returns>
-        int SubmitApplication(ISellerApplication application, ConfidentialInvoiceDiscount confidentialInvoiceDiscount);
+        ISubmitApplicationResult SubmitApplication(
+            ISellerApplication application, ConfidentialInvoiceDiscount confidentialInvoiceDiscount);
         
         /// <summary>
         /// Submits application for BusinessLoans
@@ -30,6 +32,7 @@ namespace SlothEnterprise.ProductApplication.Services
         /// <param name="application">Seller application</param>
         /// <param name="businessLoans">Business loans product</param>
         /// <returns></returns>
-        int SubmitApplication(ISellerApplication application, BusinessLoans businessLoans);
+        ISubmitApplicationResult SubmitApplication(
+            ISellerApplication application, BusinessLoans businessLoans);
     }
 }
