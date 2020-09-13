@@ -2,8 +2,8 @@
 
 ## Top 5 main areas of concern:
 
-1. `SubmitApplicationFor` method is quite big, complex and does too many stuff inside. If we would add new `ISellerApplication` realization in the future, this method also become bigger and more complex.
-We can refactor `ProductApplicationService` service using Visitor pattern in aim to break this method into multiple little methods and make this service flexible for the upcoming features (for example, new type of `ISellerApplication`)
+1. `SubmitApplicationFor` method is quite big, complex and does too many stuff inside. If we would add new `IProduct` implementation in the future, this method also become bigger and more complex.
+We can refactor `ProductApplicationService` service using Visitor pattern in aim to break this method into multiple little methods and make this service flexible for the upcoming features (for example, new type of `IProduct`)
 
 2. Returning just int value from `SubmitApplicationFor` method looks very strange. 
 It says nothing about returning value - i cant understand if it is a id of application or any other number (sum or something like that). 
