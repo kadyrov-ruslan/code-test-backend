@@ -3,10 +3,11 @@ using SlothEnterprise.External;
 using SlothEnterprise.External.V1;
 using SlothEnterprise.ProductApplication.Applications;
 using SlothEnterprise.ProductApplication.Products;
+using SlothEnterprise.ProductApplication.Services;
 
 namespace SlothEnterprise.ProductApplication
 {
-    public class ProductApplicationService
+    public class ProductApplicationService : IProductApplicationVisitor
     {
         private readonly ISelectInvoiceService _selectInvoiceService;
         private readonly IConfidentialInvoiceService _confidentialInvoiceWebService;
@@ -19,45 +20,64 @@ namespace SlothEnterprise.ProductApplication
             _businessLoansService = businessLoansService;
         }
 
+        /// <summary>
+        /// Submits seller application
+        /// </summary>
+        /// <param name="application"></param>
+        /// <returns></returns>
         public int SubmitApplicationFor(ISellerApplication application)
         {
+            return application.Product.VisitProduct(this, application);
+        }
 
-            if (application.Product is SelectiveInvoiceDiscount sid)
-            {
-                return _selectInvoiceService.SubmitApplicationFor(application.CompanyData.Number.ToString(), sid.InvoiceAmount, sid.AdvancePercentage);
-            }
+        ///<inheritdoc/>
+        public int SubmitApplication(
+            ISellerApplication application,
+            SelectiveInvoiceDiscount selectiveInvoiceDiscount)
+        {
+            return _selectInvoiceService.SubmitApplicationFor(
+                application.CompanyData.Number.ToString(),
+                selectiveInvoiceDiscount.InvoiceAmount,
+                selectiveInvoiceDiscount.AdvancePercentage);
+        }
 
-            if (application.Product is ConfidentialInvoiceDiscount cid)
-            {
-                var result = _confidentialInvoiceWebService.SubmitApplicationFor(
-                    new CompanyDataRequest
-                    {
-                        CompanyFounded = application.CompanyData.Founded,
-                        CompanyNumber = application.CompanyData.Number,
-                        CompanyName = application.CompanyData.Name,
-                        DirectorName = application.CompanyData.DirectorName
-                    }, cid.TotalLedgerNetworth, cid.AdvancePercentage, cid.VatRate);
-
-                return (result.Success) ? result.ApplicationId ?? -1 : -1;
-            }
-
-            if (application.Product is BusinessLoans loans)
-            {
-                var result = _businessLoansService.SubmitApplicationFor(new CompanyDataRequest
+        ///<inheritdoc/>
+        public int SubmitApplication(
+            ISellerApplication application,
+            ConfidentialInvoiceDiscount confidentialInvoiceDiscount)
+        {
+            var result = _confidentialInvoiceWebService.SubmitApplicationFor(
+                new CompanyDataRequest
                 {
                     CompanyFounded = application.CompanyData.Founded,
                     CompanyNumber = application.CompanyData.Number,
                     CompanyName = application.CompanyData.Name,
                     DirectorName = application.CompanyData.DirectorName
-                }, new LoansRequest
-                {
-                    InterestRatePerAnnum = loans.InterestRatePerAnnum,
-                    LoanAmount = loans.LoanAmount
-                });
-                return (result.Success) ? result.ApplicationId ?? -1 : -1;
-            }
+                }, 
+                confidentialInvoiceDiscount.TotalLedgerNetworth, 
+                confidentialInvoiceDiscount.AdvancePercentage, 
+                confidentialInvoiceDiscount.VatRate);
 
-            throw new InvalidOperationException();
+            return (result.Success) ? result.ApplicationId ?? -1 : -1;
+        }
+
+        ///<inheritdoc/>
+        public int SubmitApplication(
+            ISellerApplication application,
+            BusinessLoans businessLoans)
+        {
+            var result = _businessLoansService.SubmitApplicationFor(new CompanyDataRequest
+            {
+                CompanyFounded = application.CompanyData.Founded,
+                CompanyNumber = application.CompanyData.Number,
+                CompanyName = application.CompanyData.Name,
+                DirectorName = application.CompanyData.DirectorName
+            }, new LoansRequest
+            {
+                InterestRatePerAnnum = businessLoans.InterestRatePerAnnum,
+                LoanAmount = businessLoans.LoanAmount
+            });
+            return (result.Success) ? result.ApplicationId ?? -1 : -1;
         }
     }
 }
